@@ -8,6 +8,30 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@petrpatek/mind-ar@1.2.8/dist/mindar-image-aframe.prod.js"></script>
 
+    <script>
+      AFRAME.registerComponent('smooth-follow', {
+        schema: { alpha: { default: 0.12 } }, // más bajo = más suave (más retraso)
+        init() {
+          const obj = this.el.object3D;
+          this.smoothedPos = obj.position.clone();
+          this.smoothedQuat = obj.quaternion.clone();
+          this._tmpQuat = new THREE.Quaternion();
+        },
+        tick() {
+          const obj = this.el.object3D;
+
+          // Posición
+          this.smoothedPos.lerp(obj.position, this.data.alpha);
+          obj.position.copy(this.smoothedPos);
+
+          // Rotación
+          this._tmpQuat.copy(obj.quaternion);
+          this.smoothedQuat.slerp(this._tmpQuat, this.data.alpha);
+          obj.quaternion.copy(this.smoothedQuat);
+        }
+      });
+    </script>
+
     <style>
       body { margin: 0; }
     </style>
@@ -37,8 +61,7 @@
       <a-light type="directional" position="0 1 1" intensity="1.2"></a-light>
       <a-light type="directional" position="0 1 -1" intensity="0.6"></a-light>
 
-
-      <a-entity mindar-image-target="targetIndex: 0">
+      <a-entity mindar-image-target="targetIndex: 0" smooth-follow="alpha: 0.12">
         <a-gltf-model
           src="#koalaModel"
           position="0 0 0.2"
@@ -49,4 +72,3 @@
     </a-scene>
   </body>
 </html>
-
