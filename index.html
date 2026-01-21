@@ -10,7 +10,7 @@
 
     <script>
       AFRAME.registerComponent('smooth-follow', {
-        schema: { alpha: { default: 0.12 } }, // más bajo = más suave (más retraso)
+        schema: { alpha: { default: 0.06 } }, // más bajo = más suave (más retraso)
         init() {
           const obj = this.el.object3D;
           this.smoothedPos = obj.position.clone();
